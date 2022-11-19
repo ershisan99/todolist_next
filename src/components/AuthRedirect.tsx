@@ -7,13 +7,10 @@ import { Loader } from "./loader";
 export const AuthRedirect: FC<{ children: ReactNode }> = ({ children }) => {
   const router = useRouter();
   const { data: user, isLoading, isError } = useMeQuery();
-  console.log(user);
   const isAuthPage = router.pathname === "/login";
 
   useEffect(() => {
-    console.log("here");
     if (!isLoading && !user && !isAuthPage) {
-      console.log("here");
       router.push("/login");
     }
   }, [user, isError, isLoading, isAuthPage, router]);

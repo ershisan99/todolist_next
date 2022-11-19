@@ -8,6 +8,12 @@ const handleError = (data: any) => {
   }
 };
 
+export interface Todolist {
+  id: string;
+  title: string;
+  addedDate: Date;
+  order: number;
+}
 export type PostLoginArgs = {
   email: string;
   password: string;
@@ -27,4 +33,20 @@ export const getMe = async () => {
 export const deleteMe = async () => {
   const data = await instance.delete("auth/login");
   return handleError(data.data);
+};
+
+export const getTodolists = () => {
+  return instance.get<Todolist[]>("todo-lists");
+};
+
+export const getTask = (todolistId: string) => {
+  return instance.get(`todo-lists/${todolistId}/tasks`);
+};
+
+export const putTask = (todolistId: string, task: any) => {
+  const { id, ...rest } = task;
+  return instance.put(`todo-lists/${todolistId}/tasks/${id}`, rest);
+};
+export const deleteTask = (todolistId: string, taskId: string) => {
+  return instance.delete(`todo-lists/${todolistId}/tasks/${taskId}`);
 };

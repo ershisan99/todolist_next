@@ -6,8 +6,10 @@ import {
 } from "@tanstack/react-query";
 import type { PostLoginArgs } from "./index";
 import {
+  createTodolist,
   deleteMe,
   deleteTask,
+  deleteTodolist,
   getMe,
   getTask,
   getTodolists,
@@ -97,6 +99,26 @@ export const useDeleteTaskMutation = () => {
     onSuccess: (_, variables) => {
       const todolistId = variables.todolistId;
       queryClient.invalidateQueries(["tasks", todolistId]);
+    },
+  });
+};
+
+export const useCreateTodolistMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (title: string) => createTodolist(title),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["todolists"]);
+    },
+  });
+};
+
+export const useDeleteTodolistMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (todolistId: string) => deleteTodolist(todolistId),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["todolists"]);
     },
   });
 };

@@ -47,6 +47,15 @@ export const putTask = (todolistId: string, task: any) => {
   const { id, ...rest } = task;
   return instance.put(`todo-lists/${todolistId}/tasks/${id}`, rest);
 };
+
 export const deleteTask = (todolistId: string, taskId: string) => {
   return instance.delete(`todo-lists/${todolistId}/tasks/${taskId}`);
+};
+
+export const createTodolist = (title: string) => {
+  return instance.post(`todo-lists`, { title });
+};
+
+export const deleteTodolist = (todolistId: string) => {
+  return instance.delete(`todo-lists/${todolistId}`);
 };

@@ -1,11 +1,7 @@
-import {
-  useMutation,
-  useQueries,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { PostLoginArgs } from "./index";
 import {
+  createTask,
   createTodolist,
   deleteMe,
   deleteTask,
@@ -62,22 +58,16 @@ export const useTodolistsQuery = () => {
   });
 };
 
-export const useGetTasksQuery = (todolistIds: string[]) => {
-  const enabled = todolistIds && todolistIds.length > 0;
-  return useQueries({
-    queries: todolistIds.map((todolistId) => {
-      return {
-        queryKey: ["tasks", todolistId],
-        queryFn: () =>
-          getTask(todolistId).then((res) => {
-            return {
-              data: res.data,
-              todolistId,
-            };
-          }),
-        enabled: enabled,
-      };
-    }),
+export const useGetTasksQuery = (todolistId: string) => {
+  return useQuery({
+    queryKey: ["tasks", todolistId],
+    queryFn: () =>
+      getTask(todolistId).then((res) => {
+        return {
+          data: res.data,
+          todolistId,
+        };
+      }),
   });
 };
 
@@ -119,6 +109,18 @@ export const useDeleteTodolistMutation = () => {
     mutationFn: (todolistId: string) => deleteTodolist(todolistId),
     onSuccess: () => {
       queryClient.invalidateQueries(["todolists"]);
+    },
+  });
+};
+
+export const useCreateTaskMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (args: { todolistId: string; title: string }) =>
+      createTask(args.todolistId, args.title),
+    onSuccess: (res) => {
+      const todolistId = res.data.data.item.todoListId;
+      queryClient.invalidateQueries(["tasks", todolistId]);
     },
   });
 };

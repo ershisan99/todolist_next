@@ -59,3 +59,7 @@ export const createTodolist = (title: string) => {
 export const deleteTodolist = (todolistId: string) => {
   return instance.delete(`todo-lists/${todolistId}`);
 };
+
+export const createTask = (todolistId: string, title: string) => {
+  return instance.post(`todo-lists/${todolistId}/tasks`, { title });
+};

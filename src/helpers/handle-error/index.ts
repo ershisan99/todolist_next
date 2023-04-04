@@ -1,4 +1,4 @@
-import type { ApiResponse } from "@/services";
+import type { ApiResponse } from "@/helpers";
 
 export const handleError = <T>(data: ApiResponse<T>): ApiResponse<T> => {
   if (data.resultCode !== 0) {

@@ -1,8 +1,11 @@
 import type { FC, ReactNode } from "react";
 import { useEffect } from "react";
+
 import { useRouter } from "next/router";
-import { useMeQuery } from "../services/hooks";
-import { Loader } from "./loader";
+
+import { Loader } from "../loader";
+
+import { useMeQuery } from "@/services";
 
 export const AuthRedirect: FC<{ children: ReactNode }> = ({ children }) => {
   const router = useRouter();
@@ -22,5 +25,6 @@ export const AuthRedirect: FC<{ children: ReactNode }> = ({ children }) => {
       </div>
     );
   }
+
   return <>{children}</>;
 };

@@ -1,28 +1,27 @@
-import React from "react";
+import type { ChangeEvent } from "react";
+import React, { useState } from "react";
+
 import type { NextPage } from "next";
-import { Input } from "../components/Input";
-import { Button } from "../components/Button";
-import { useLoginMutation } from "../services/hooks";
-import { useRouter } from "next/router";
-import { useQueryClient } from "@tanstack/react-query";
+
+import { Button, Input } from "@/components";
+import { useLoginMutation } from "@/services";
 
 const Login: NextPage = () => {
-  const { mutateAsync: login } = useLoginMutation();
-  const router = useRouter();
-  const queryClient = useQueryClient();
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [remember, setRemember] = React.useState(true);
+  const { mutate: login } = useLoginMutation();
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(true);
+
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   };
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
 
-  const handleRememberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleRememberChange = (e: ChangeEvent<HTMLInputElement>) => {
     setRemember(e.target.checked);
   };
 
@@ -31,9 +30,6 @@ const Login: NextPage = () => {
       email,
       password,
       rememberMe: remember,
-    }).then(() => {
-      queryClient.invalidateQueries(["me"]);
-      router.push("/");
     });
   };
 

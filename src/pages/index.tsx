@@ -1,16 +1,15 @@
+import type { ChangeEvent } from "react";
+import { useState } from "react";
+
 import { type NextPage } from "next";
 import Head from "next/head";
-import { Button } from "../components/Button";
+
+import { Todolist, Button, FullscreenLoader, Input } from "@/components";
 import {
   useCreateTodolistMutation,
   useLogoutMutation,
   useTodolistsQuery,
-} from "../services/hooks";
-import { Loader } from "../components/loader";
-import { Input } from "../components/Input";
-import type { ChangeEvent } from "react";
-import { useState } from "react";
-import Todolist from "../components/todolist";
+} from "@/services";
 
 const Home: NextPage = () => {
   const [newTodolistTitle, setNewTodolistTitle] = useState("");
@@ -22,24 +21,19 @@ const Home: NextPage = () => {
     logout();
   };
 
-  const { mutateAsync: createTodolist } = useCreateTodolistMutation();
+  const { mutate: createTodolist } = useCreateTodolistMutation();
 
   const handleAddTodolist = () => {
-    createTodolist(newTodolistTitle).then((res) => {
-      if (res.data.resultCode === 0) setNewTodolistTitle("");
-    });
+    createTodolist({ title: newTodolistTitle });
+    setNewTodolistTitle("");
   };
 
   const handleNewTodolistTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setNewTodolistTitle(e.target.value);
   };
 
-  if (isTodolistsLoading)
-    return (
-      <div className={"flex h-screen items-center justify-center"}>
-        <Loader />
-      </div>
-    );
+  if (isTodolistsLoading) return <FullscreenLoader />;
+
   return (
     <>
       <Head>

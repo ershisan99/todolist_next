@@ -1,44 +1,47 @@
 import type { ChangeEvent, FC, MouseEventHandler } from "react";
+import { memo, useState } from "react";
+
+import type { Task, Todolist as TodolistType } from "../../services/todolists";
+import { Button } from "../button";
+import { Input } from "../input";
+
 import {
   useCreateTaskMutation,
   useDeleteTaskMutation,
   useDeleteTodolistMutation,
   useGetTasksQuery,
-  usePutTaskMutation,
-} from "../services/hooks";
-import { memo, useState } from "react";
-import { Input } from "./Input";
-import { Button } from "./Button";
+  useUpdateTaskMutation,
+} from "@/services";
 
 type Props = {
-  todolist: any;
+  todolist: TodolistType;
 };
 
 type Filter = "all" | "active" | "completed";
 
-const Todolist: FC<Props> = ({ todolist }) => {
+export const Todolist: FC<Props> = memo(({ todolist }) => {
   const { data: tasks, isLoading } = useGetTasksQuery(todolist.id);
-  const { mutate: putTask } = usePutTaskMutation();
+  const { mutate: putTask } = useUpdateTaskMutation();
   const { mutate: deleteTask } = useDeleteTaskMutation();
   const { mutate: deleteTodolist } = useDeleteTodolistMutation();
-  const { mutateAsync: createTask } = useCreateTaskMutation();
+  const { mutate: createTask } = useCreateTaskMutation();
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [filter, setFilter] = useState("all");
-  console.log(newTaskTitle);
-  const handleChangeStatus = (todolistId: string, task: any) => {
+
+  const handleChangeStatus = (todolistId: string, task: Task) => {
     const newTask = { ...task, status: task.status === 0 ? 2 : 0 };
+
     putTask({ todolistId, task: newTask });
   };
   const handleDeleteTask = (todolistId: string, taskId: string) => {
     deleteTask({ todolistId, taskId });
   };
   const handleDeleteTodolist = (todolistId: string) => {
-    deleteTodolist(todolistId);
+    deleteTodolist({ todolistId });
   };
   const handleAddTask = () => {
-    createTask({ todolistId: todolist.id, title: newTaskTitle }).then((res) => {
-      if (res.data.resultCode === 0) setNewTaskTitle("");
-    });
+    createTask({ todolistId: todolist.id, title: newTaskTitle });
+    setNewTaskTitle("");
   };
   const handleNewTaskTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setNewTaskTitle(e.target.value);
@@ -49,7 +52,7 @@ const Todolist: FC<Props> = ({ todolist }) => {
   };
 
   if (isLoading) return <div>loading...</div>;
-  const filteredTasks = tasks?.data?.items?.filter((task: any) => {
+  const filteredTasks = tasks?.items?.filter((task) => {
     switch (filter) {
       case "active":
         return task.status === 0;
@@ -59,6 +62,7 @@ const Todolist: FC<Props> = ({ todolist }) => {
         return true;
     }
   });
+
   return (
     <div
       key={todolist.id}
@@ -74,7 +78,7 @@ const Todolist: FC<Props> = ({ todolist }) => {
         <Input value={newTaskTitle} onChange={handleNewTaskTitleChange} />
         <Button onClick={handleAddTask}>+</Button>
       </div>
-      {filteredTasks.map((task: any) => (
+      {filteredTasks?.map((task) => (
         <div className={"flex items-center gap-2"} key={task.id}>
           <input
             onChange={() => handleChangeStatus(todolist.id, task)}
@@ -100,6 +104,4 @@ const Todolist: FC<Props> = ({ todolist }) => {
       </div>
     </div>
   );
-};
-
-export default memo(Todolist);
+});
